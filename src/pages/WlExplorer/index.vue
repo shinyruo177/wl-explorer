@@ -2,13 +2,13 @@
   <!-- 文件管理器 auth：weilan time：2019-10-25 github：https://github.com/hql7 -->
   <div class="wl-explorer">
     <!-- 头部按钮区 -->
-    <el-form class="wl-header-btn" :inline="true" :size="size" @submit.native.prevent>
+    <!-- <el-form class="wl-header-btn" :inline="true" :size="size" @submit.native.prevent>
       <el-form-item>
         <el-button type="primary" @click="handleFolder('add')">新增文件夹</el-button>
         <el-button :disabled="disabledEditFolder" @click="handleFolder('edit')">编辑文件夹</el-button>
         <submit-btn type="danger" :size="size" @btn="handleDel" :status="load.del">删除</submit-btn>
         <el-button @click="showUpload">上传文件</el-button>
-        <!-- solt自定义头部按钮区 -->
+        solt自定义头部按钮区
         <slot name="header-btn"></slot>
       </el-form-item>
       <el-form-item>
@@ -20,7 +20,7 @@
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="wl-move">移动</el-dropdown-item>
             <el-dropdown-item command="wl-download">下载</el-dropdown-item>
-            <!-- props自定义头部更多操作 -->
+            props自定义头部更多操作
             <el-dropdown-item
               v-for="i of selfHeaderDropdown"
               :key="i.id"
@@ -29,7 +29,7 @@
               :divided="i.divided"
               :disabled="i.disabled"
             >{{i.name}}</el-dropdown-item>
-            <!-- solt自定义头部更多操作 -->
+            solt自定义头部更多操作
             <slot name="header-dropdown"></slot>
           </el-dropdown-menu>
         </el-dropdown>
@@ -51,7 +51,7 @@
           @click="layout.show_list=!layout.show_list"
         ></i>
       </el-form-item>
-    </el-form>
+    </el-form> -->
     <!--文件路径操作区-->
     <el-form
       :inline="true"
@@ -150,7 +150,7 @@
             :label-class-name="i.labelClassName"
           >
             <template slot-scope="scope">
-              <!-- 非名称列 -->
+              <!-- 非名称列 selfProps是关于字段的自定义数据 -->
               <template v-if="i.prop !== selfProps.name">
                 {{
                 i.formatter
@@ -422,58 +422,58 @@ export default {
      * type: string 添加add 编辑edit
      * auth: boolean 是否只修改权限
      */
-    handleFolder(type) {
-      let [_act = null] = this.file_checked_data;
-      if (type === "edit" && (!_act || !_act[this.selfIsFolder])) {
-        this.$message({
-          showClose: true,
-          message: "请选择文件夹",
-          type: "error"
-        });
-        return;
-      }
-      // 当前文件夹 文件夹操作类型 新增文件夹回调（只用于历史存储）
-      this.$emit("handleFolder", _act, type, this.file);
-      this.closeUpload();
-    },
+    // handleFolder(type) {
+    //   let [_act = null] = this.file_checked_data;
+    //   if (type === "edit" && (!_act || !_act[this.selfIsFolder])) {
+    //     this.$message({
+    //       showClose: true,
+    //       message: "请选择文件夹",
+    //       type: "error"
+    //     });
+    //     return;
+    //   }
+    //   // 当前文件夹 文件夹操作类型 新增文件夹回调（只用于历史存储）
+    //   this.$emit("handleFolder", _act, type, this.file);
+    //   this.closeUpload();
+    // },
     // 文件夹删除操作
-    handleDel() {
-      if (this.file_checked_data.length === 0) {
-        this.$message({
-          showClose: true,
-          message: "请选择要删除的文件或文件夹",
-          type: "error"
-        });
-        return;
-      }
-      // 删除确认
-      this.$confirm("是否确认删除选中数据？", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          this.$emit("del", this.file_checked_data);
-        })
-        .catch(() => {
-          this.$message({
-            type: "info",
-            message: "已取消删除"
-          });
-        });
-    },
+    // handleDel() {
+    //   if (this.file_checked_data.length === 0) {
+    //     this.$message({
+    //       showClose: true,
+    //       message: "请选择要删除的文件或文件夹",
+    //       type: "error"
+    //     });
+    //     return;
+    //   }
+    //   // 删除确认
+    //   this.$confirm("是否确认删除选中数据？", {
+    //     confirmButtonText: "确定",
+    //     cancelButtonText: "取消",
+    //     type: "warning"
+    //   })
+    //     .then(() => {
+    //       this.$emit("del", this.file_checked_data);
+    //     })
+    //     .catch(() => {
+    //       this.$message({
+    //         type: "info",
+    //         message: "已取消删除"
+    //       });
+    //     });
+    // },
     // 更多操作
-    handleDropdown(val) {
-      if (typeof val === "function") {
-        val(this.file);
-        return;
-      }
-      if (val === "wl-move") {
-        this.showMoveList();
-      } else if (val === "wl-download") {
-        this.wlDownload();
-      }
-    },
+    // handleDropdown(val) {
+    //   if (typeof val === "function") {
+    //     val(this.file);
+    //     return;
+    //   }
+    //   if (val === "wl-move") {
+    //     this.showMoveList();
+    //   } else if (val === "wl-download") {
+    //     this.wlDownload();
+    //   }
+    // },
     // 显示文件路径输入框
     handleFilePath() {
       this.layout.edit_path = true;
@@ -526,7 +526,7 @@ export default {
     },
     /**
      * 往历史里添加新的步骤
-     * file: Object 路径数据{id: 路径id, pid: 父级路径id, path: 路径名}
+     * file: Object 路径数据{id: 完整路径, pid: 父级路径id, path: 路径名}
      * data: Array 当前路径下的数据
      */
     routerPush(file, data = []) {
@@ -544,7 +544,7 @@ export default {
       this.path.index = -1; // 将步骤从新回到原位
     },
     /**
-     * 处理当前步骤数据
+     * 处理当前步骤数据 实际的跳转-数据重新渲染
      * file: Object 路径数据{id: 路径id, pid: 父级路径id, path: 路径名}
      * data: Array 当前路径下的数据
      */
@@ -657,6 +657,8 @@ export default {
         pid: row[this.selfProps.pathPid],
         path: row[this.selfProps.pathName]
       });
+      //会在父组件调用getFileList，更新data从而触发change
+      //handleDataChange会找到path并且找到对应id，把data填充进去
       this.$emit("search", this.file, true);
     },
     // 文件、文件夹移动
@@ -672,18 +674,18 @@ export default {
       });
     },
     // 显示上传界面
-    showUpload() {
-      if (this.useUpload) {
-        this.layout.upload = true;
-        this.$emit("closeFade");
-      } else {
-        this.$emit("showUpload");
-      }
-    },
+    // showUpload() {
+    //   if (this.useUpload) {
+    //     this.layout.upload = true;
+    //     this.$emit("closeFade");
+    //   } else {
+    //     this.$emit("showUpload");
+    //   }
+    // },
     // 关闭上传界面
-    closeUpload() {
-      this.layout.upload = false;
-    },
+    // closeUpload() {
+    //   this.layout.upload = false;
+    // },
     // 文件上传提交操作
     saveUpload() {
       this.$emit("upload", this.file, this.handleUpload);
@@ -819,6 +821,7 @@ export default {
           i.isLock = this.isLockFn(i);
         });
       }
+      console.warn("this.file.key",this.file);
       if (this.file.key) {
         this.self_data = _data;
         return;
