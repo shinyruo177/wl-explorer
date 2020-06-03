@@ -526,7 +526,7 @@ export default {
     },
     /**
      * 往历史里添加新的步骤
-     * file: Object 路径数据{id: 完整路径, pid: 父级路径id, path: 路径名}
+     * file: Object 路径数据{id: 完整路径id, pid: 父级路径id, path: 路径名}
      * data: Array 当前路径下的数据
      */
     routerPush(file, data = []) {
@@ -592,6 +592,7 @@ export default {
     },
     // 前进后退按钮操作
     pathBtn(type) {
+      console.warn("type",type,"path",this.path);
       if (type === "prv") {
         if (this.pathIsStart) return;
         if (this.path.index === -1) {
@@ -821,7 +822,6 @@ export default {
           i.isLock = this.isLockFn(i);
         });
       }
-      console.warn("this.file.key",this.file);
       if (this.file.key) {
         this.self_data = _data;
         return;
