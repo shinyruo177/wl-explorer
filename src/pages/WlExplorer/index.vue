@@ -59,8 +59,25 @@
       :model="file"
       class="wl-header-file"
       @submit.native.prevent
-    >
-      <el-form-item class="file-path-box">
+    > 
+    <el-form-item class="file-handle-box">
+        <i
+          class="iconfont icon-wl-left file-path-handle"
+          :class="{'u-disabled':pathIsStart}"
+          @click="pathBtn('prv')"
+        ></i>
+        <i
+          class="iconfont icon-wl-right file-path-handle"
+          :class="{'u-disabled':pathIsEnd}"
+          @click="pathBtn('next')"
+        ></i>
+        <!-- <i
+          class="iconfont icon-wl-up file-path-handle"
+          :class="{'u-disabled':path.level===1}"
+          @click="pathBtn('top')"
+        ></i> -->
+      </el-form-item>
+      <!-- <el-form-item class="file-path-box">
         <div
           class="file-path-text"
           :class="{small: size=='small'}"
@@ -88,29 +105,14 @@
             title="文件夹"
           />
         </el-autocomplete>
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item class="file-search-box">
         <el-input v-model="file.key" placeholder="请输入关键字搜索" @keyup.enter.native="fileSearch()">
-          <el-button slot="append" icon="el-icon-search file-search" @click="fileSearch()"></el-button>
+          <el-button slot="append" icon="el-icon-search file-search" type="primary" @click="fileSearch()"></el-button>
         </el-input>
       </el-form-item>
-      <el-form-item class="file-handle-box">
-        <i
-          class="iconfont icon-wl-left file-path-handle"
-          :class="{'u-disabled':pathIsStart}"
-          @click="pathBtn('prv')"
-        ></i>
-        <i
-          class="iconfont icon-wl-right file-path-handle"
-          :class="{'u-disabled':pathIsEnd}"
-          @click="pathBtn('next')"
-        ></i>
-        <i
-          class="iconfont icon-wl-up file-path-handle"
-          :class="{'u-disabled':path.level===1}"
-          @click="pathBtn('top')"
-        ></i>
-      </el-form-item>
+       <el-button type="primary" @click="fileBroad" plain size="mini">确定</el-button>
+      
     </el-form>
     <!-- 主内容区 -->
     <el-scrollbar class="wl-main-scroll">
@@ -127,7 +129,7 @@
           ref="wl-table"
         >
           <el-table-column v-if="showCheckbox" align="center" type="selection" width="55"></el-table-column>
-          <el-table-column v-if="showIndex" align="center" type="index" label="序号" width="55"></el-table-column>
+          <!-- <el-table-column v-if="showIndex" align="center" type="index" label="序号" width="55"></el-table-column> -->
           <slot name="table-column-top"></slot>
           <el-table-column
             v-for="i of selfColumns"
@@ -204,7 +206,7 @@
     <!-- slot 自定义dom区 -->
     <slot></slot>
     <!-- 文件预览区 -->
-    <template v-if="usePreview">
+    <!-- <template v-if="usePreview">
       <file-view
         v-show="layout.view"
         ref="file-view"
@@ -213,9 +215,9 @@
         :previewOptions="previewOptions"
         @close="layout.view = false"
       ></file-view>
-    </template>
+    </template> -->
     <!-- 移动文件区 -->
-    <el-dialog title="移动文件" width="520px" :visible.sync="layout.move">
+    <!-- <el-dialog title="移动文件" width="520px" :visible.sync="layout.move">
       <wlTreeSelect
         class="u-full"
         :size="size"
@@ -228,9 +230,9 @@
         <el-button :size="size" @click="layout.move = false">取 消</el-button>
         <submit-btn :size="size" @btn="fileMove" :status="load.move">确 定</submit-btn>
       </span>
-    </el-dialog>
+    </el-dialog> -->
     <!-- 文件上传区 -->
-    <template v-if="useUpload">
+    <!-- <template v-if="useUpload">
       <fade-in v-show="layout.upload">
         <h3 class="edit-header">上传文件</h3>
         <el-scrollbar class="scroll">
@@ -267,13 +269,13 @@
             </el-form-item>
           </el-form>
         </el-scrollbar>
-        <!-- 按钮区 -->
+        按钮区
         <div class="submit-btn-box">
           <submit-btn :size="size" @btn="saveUpload()" :status="load.upload">保存</submit-btn>
           <el-button :size="size" @click="layout.upload = false">取消</el-button>
         </div>
       </fade-in>
-    </template>
+    </template> -->
   </div>
 </template>
 
@@ -474,6 +476,9 @@ export default {
     //     this.wlDownload();
     //   }
     // },
+    fileBroad(){
+      this.$emit("lineAdd",this.file_checked_data);
+    },
     // 显示文件路径输入框
     handleFilePath() {
       this.layout.edit_path = true;
@@ -598,6 +603,7 @@ export default {
         if (this.path.index === -1) {
           this.path.index = this.path.history.length - 1;
         }
+        this.path.history.length = this.path.history.length - 1;
         this.path.index -= 1;
         let _prv = this.path.history[this.path.index];
         this.routerActive(_prv, _prv.data);
@@ -931,7 +937,10 @@ export default {
         children: this.selfProps.pathChildren
       };
       this.tree_path = arrayToTree(val || [], options);
-    }
+    },
+    // file_checked_data(val){
+    //   this.$emit('lineUp',val);
+    // }
   },
   created() {
     if (this.data && this.data.length > 0) {

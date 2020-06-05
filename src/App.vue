@@ -14,6 +14,7 @@
       @search="fileSearch"
       @del="fileDel"
       @closeFade="closeOtherLayout(fade)"
+      @lineUp="fileAdd"
     >
       <!-- 操作文件夹滑入区 -->
       <fadeIn v-show="fade.folder">
@@ -157,84 +158,7 @@ export default {
           }
         }
       ], // 自定义表格列
-      file_table_data: [{
-          Path: "D://app//hcb",
-          Id: "1914aabb-487b-4f56-9dd2-1943c4ed99bb",
-          ProjectId: "bab2cc5d-30a0-4410-8b1f-2aabfd5cbc18",
-          ParentId: "00000000-0000-0000-0000-000000000000",
-          IdentityId: 1,
-          Parents: "",
-          Name: "的事",
-          RourceId: "00000000-0000-0000-0000-000000000000",
-          WBSId: "00000000-0000-0000-0000-000000000000",
-          RourceType: 1,
-          ISAllVisible: false,
-          Describe: "",
-          CreateUserName: "蔚蓝",
-          CreateTime: "2019-11-01T09:29:44.79",
-          EditTime: "2019-11-07T17:34:44.383",
-          EditBy: "蔚蓝",
-          Type: 1,
-          FileType: 0,
-          PictuerCount: 0,
-          FilesCount: 0,
-          Size: null,
-          FileId: "00000000-0000-0000-0000-000000000000",
-          SuffixName: null,
-          PermissionType: 10
-        },
-        {
-          Path: "D://app//hcb2",
-          Id: "1a55a164-ccf8-4457-8645-bf157853c8c2",
-          ProjectId: "bab2cc5d-30a0-4410-8b1f-2aabfd5cbc18",
-          ParentId: "00000000-0000-0000-0000-000000000000",
-          IdentityId: 56,
-          Parents: "",
-          Name: "工程部位",
-          RourceId: "00000000-0000-0000-0000-000000000000",
-          WBSId: "00000000-0000-0000-0000-000000000000",
-          RourceType: 3,
-          ISAllVisible: false,
-          Describe: "",
-          CreateUserName: "蔚蓝",
-          CreateTime: "2019-11-06T14:05:34.743",
-          EditTime: "2019-11-06T14:05:34.75",
-          EditBy: "蔚蓝",
-          Type: 1,
-          FileType: 0,
-          PictuerCount: 0,
-          FilesCount: 0,
-          Size: null,
-          FileId: "00000000-0000-0000-0000-000000000000",
-          SuffixName: null,
-          PermissionType: 20
-        },
-        {
-          Path: "D://app//hcb3",
-          Id: "4a1cf9d9-9662-4e76-882b-34d78ca1537f",
-          ProjectId: "bab2cc5d-30a0-4410-8b1f-2aabfd5cbc18",
-          ParentId: "00000000-0000-0000-0000-000000000000",
-          IdentityId: 98,
-          Parents: "",
-          Name: "啊啊啊",
-          RourceId: "00000000-0000-0000-0000-000000000000",
-          WBSId: "00000000-0000-0000-0000-000000000000",
-          RourceType: 1,
-          ISAllVisible: false,
-          Describe: "",
-          CreateUserName: "蔚蓝",
-          CreateTime: "2019-11-06T15:01:51.293",
-          EditTime: "2019-11-07T15:05:20.613",
-          EditBy: "蔚蓝",
-          Type: 1,
-          FileType: 0,
-          PictuerCount: 0,
-          FilesCount: 0,
-          Size: null,
-          FileId: "00000000-0000-0000-0000-000000000000",
-          SuffixName: null,
-          PermissionType: 10
-        }], // 表格数据
+      file_table_data: [], // 表格数据
       all_folder_list: [], // 所有文件夹列表
       tree_folder_list: [], // 树形文件夹列表
       type: {
@@ -284,11 +208,13 @@ export default {
      * update: Boolean 数据是否需要更新（不需要表示已存在）
      */
     fileSearch(file, update) {
-      console.warn("file",file);
       if (update) {
         this.path = file;
         this.getFileList();
       }
+    },
+    fileAdd(files){
+      console.warn('parent',files);
     },
     // 获取文件夹列表
     getFileList() {
@@ -430,7 +356,7 @@ export default {
   created() {
     this.closeOtherLayout = closeOtherLayout;
     this.getAllFolders();
-    // this.getFileList();
+    this.getFileList();
   }
 };
 </script>
