@@ -125,6 +125,13 @@ $dominant_hue_icon: #00abea; // 按钮图标主色值
   // 主体文件列表区
   .wl-main-list {
     padding: 0 20px 20px;
+    .wl-main-tip{
+      position:sticky;
+      top:0px;
+      height:30px;
+      z-index: 5;
+
+    }
   }
   .wl-table th {
     background-color: #f9f9f9;

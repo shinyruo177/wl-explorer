@@ -175,7 +175,7 @@ export default {
         match: "Name",
         splic: true,
         suffix: "SuffixName",
-        pathId: "Path",
+        pathId: "Id",
         pathPid: "ParentId",
         pathName: "Name",
         pathChildren: "Children", // String 路径数据 children字段

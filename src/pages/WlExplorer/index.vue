@@ -51,7 +51,7 @@
           @click="layout.show_list=!layout.show_list"
         ></i>
       </el-form-item>
-    </el-form> -->
+    </el-form>-->
     <!--文件路径操作区-->
     <el-form
       :inline="true"
@@ -59,8 +59,8 @@
       :model="file"
       class="wl-header-file"
       @submit.native.prevent
-    > 
-    <el-form-item class="file-handle-box">
+    >
+      <el-form-item class="file-handle-box">
         <i
           class="iconfont icon-wl-left file-path-handle"
           :class="{'u-disabled':pathIsStart}"
@@ -75,7 +75,7 @@
           class="iconfont icon-wl-up file-path-handle"
           :class="{'u-disabled':path.level===1}"
           @click="pathBtn('top')"
-        ></i> -->
+        ></i>-->
       </el-form-item>
       <!-- <el-form-item class="file-path-box">
         <div
@@ -105,19 +105,31 @@
             title="文件夹"
           />
         </el-autocomplete>
-      </el-form-item> -->
+      </el-form-item>-->
       <el-form-item class="file-search-box">
         <el-input v-model="file.key" placeholder="请输入关键字搜索" @keyup.enter.native="fileSearch()">
-          <el-button slot="append" icon="el-icon-search file-search" type="primary" @click="fileSearch()"></el-button>
+          <el-button
+            slot="append"
+            icon="el-icon-search file-search"
+            type="primary"
+            @click="fileSearch()"
+          ></el-button>
         </el-input>
       </el-form-item>
-       <el-button type="primary" @click="fileBroad" plain size="mini">确定</el-button>
-      
+      <el-button class="file-search-btn"  @click="fileBroad" plain size="small">确定</el-button>
     </el-form>
     <!-- 主内容区 -->
     <el-scrollbar class="wl-main-scroll">
       <!-- 文件列表区 -->
       <div class="wl-main-list">
+        <div
+          class="wl-main-tip"
+          style="position:sticky;
+                 top:0px;
+                 height:30px;
+                 z-index: 5;
+                 background-color:#fff"
+        >当前路径: {{ path_now }}</div>
         <!-- 表格型文件列表 -->
         <el-table
           v-show="layout.show_list"
@@ -215,7 +227,7 @@
         :previewOptions="previewOptions"
         @close="layout.view = false"
       ></file-view>
-    </template> -->
+    </template>-->
     <!-- 移动文件区 -->
     <!-- <el-dialog title="移动文件" width="520px" :visible.sync="layout.move">
       <wlTreeSelect
@@ -230,7 +242,7 @@
         <el-button :size="size" @click="layout.move = false">取 消</el-button>
         <submit-btn :size="size" @btn="fileMove" :status="load.move">确 定</submit-btn>
       </span>
-    </el-dialog> -->
+    </el-dialog>-->
     <!-- 文件上传区 -->
     <!-- <template v-if="useUpload">
       <fade-in v-show="layout.upload">
@@ -275,7 +287,7 @@
           <el-button :size="size" @click="layout.upload = false">取消</el-button>
         </div>
       </fade-in>
-    </template> -->
+    </template>-->
   </div>
 </template>
 
@@ -331,7 +343,7 @@ export default {
       matched_path: false, // 路径输入框内是否有匹配到的数据
       tree_path: [], // 全部路径树数据
       move_selected: "", // 所选移动文件目标路径
-      upload_selected: "" // 所选上传文件目标路径
+      upload_selected: "" // 所选上传文件目标路径,
     };
   },
   props: {
@@ -476,8 +488,8 @@ export default {
     //     this.wlDownload();
     //   }
     // },
-    fileBroad(){
-      this.$emit("lineAdd",this.file_checked_data);
+    fileBroad() {
+      this.$emit("lineAdd", this.file_checked_data);
     },
     // 显示文件路径输入框
     handleFilePath() {
@@ -597,7 +609,6 @@ export default {
     },
     // 前进后退按钮操作
     pathBtn(type) {
-      console.warn("type",type,"path",this.path);
       if (type === "prv") {
         if (this.pathIsStart) return;
         if (this.path.index === -1) {
@@ -836,9 +847,23 @@ export default {
       if (!_act) return;
       _act.data = _data;
       this.routerActive(_act, _data);
+    },
+    splitPath(path){
+      console.warn("path",path);
+     return path.substring(0,path.lastIndexOf("/"));
     }
   },
   computed: {
+    path_now(){
+      if(this.self_data.length>0){
+        return this.splitPath(this.self_data[0][this.selfProps.pathId]);
+      }else if(this.path.history.length>0){
+        return this.splitPath(this.path.history[0].data[0][this.selfProps.pathId]);
+      }else{
+        return "";
+      }
+    },
+
     // 自身头部更多操作自定义内容
     selfHeaderDropdown() {
       let _data = this.headerDropdown || [];
@@ -938,6 +963,7 @@ export default {
       };
       this.tree_path = arrayToTree(val || [], options);
     },
+   
     // file_checked_data(val){
     //   this.$emit('lineUp',val);
     // }
