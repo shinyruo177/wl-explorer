@@ -111,7 +111,6 @@
           <el-button
             slot="append"
             icon="el-icon-search file-search"
-            type="primary"
             @click="fileSearch()"
           ></el-button>
         </el-input>
