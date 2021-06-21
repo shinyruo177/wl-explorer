@@ -62,15 +62,15 @@
     >
       <el-form-item class="file-handle-box">
         <i
-          class="iconfont icon-wl-left file-path-handle"
+          class="el-icon-arrow-left file-path-handle"
           :class="{'u-disabled':pathIsStart}"
           @click="pathBtn('prv')"
         ></i>
-        <i
-          class="iconfont icon-wl-right file-path-handle"
+        <!-- <i
+          class="el-icon-arrow-right file-path-handle"
           :class="{'u-disabled':pathIsEnd}"
           @click="pathBtn('next')"
-        ></i>
+        ></i>-->
         <!-- <i
           class="iconfont icon-wl-up file-path-handle"
           :class="{'u-disabled':path.level===1}"
@@ -107,15 +107,11 @@
         </el-autocomplete>
       </el-form-item>-->
       <el-form-item class="file-search-box">
-        <el-input v-model="file.key" placeholder="请输入关键字搜索" @keyup.enter.native="fileSearch()">
-          <el-button
-            slot="append"
-            icon="el-icon-search file-search"
-            @click="fileSearch()"
-          ></el-button>
+        <el-input v-model="file.key" placeholder="请输入关键字搜索" @keyup.enter.native="fileSearch">
+          <el-button slot="append" icon="el-icon-search file-search" @click="fileSearch"></el-button>
         </el-input>
       </el-form-item>
-      <el-button class="file-search-btn"  @click="fileBroad" plain size="small">确定</el-button>
+      <el-button class="file-search-btn" @click="fileBroad" plain size="small">确定</el-button>
     </el-form>
     <!-- 主内容区 -->
     <el-scrollbar class="wl-main-scroll">
@@ -195,7 +191,7 @@
           <slot name="table-column-bottom"></slot>
         </el-table>
         <!-- 列表型文件列表 -->
-        <ul class="wl-list" v-show="!layout.show_list">
+        <ul class="wl-list" v-if="!layout.show_list">
           <li class="wl-list-item wl-is-folder" v-for="(i, idx) in self_data" :key="i.Id">
             <el-checkbox class="wl-checkbox" @change="listItemCheck($event,i)" v-model="i._checked"></el-checkbox>
             <div @click="enterTheLower(i, i[selfIsFolder])">
@@ -342,7 +338,9 @@ export default {
       matched_path: false, // 路径输入框内是否有匹配到的数据
       tree_path: [], // 全部路径树数据
       move_selected: "", // 所选移动文件目标路径
-      upload_selected: "" // 所选上传文件目标路径,
+      upload_selected: "", // 所选上传文件目标路径,
+      path_now: "",
+      filter_path: []
     };
   },
   props: {
@@ -529,17 +527,36 @@ export default {
       this.$emit("search", this.file, !_act_item);
       this.layout.edit_path = false;
     },
-    // 搜索文件
     fileSearch() {
-      if (this.file.key !== "") {
-        this.$emit("search", this.file, true);
-        return;
+      if (this.file.key === "") {
+        this.$emit("search", this.path_now, true);
+        // this.self_data = this.filter_path;
+        // this.filter_path = JSON.parse(JSON.stringify(this.self_data));
+      } else {
+        let _act_item;
+        _act_item = this.filter_path.filter(item => {
+          if (
+            item[this.selfProps.pathId]
+              .toLowerCase()
+              .includes(this.file.key.toLowerCase())
+          ) {
+            return item;
+          } else return false;
+        });
+        this.self_data = _act_item;
       }
-      let _act_item = this.path.history.find(i => i.id === this.file.id);
-      _act_item
-        ? this.routerActive(_act_item, _act_item.data)
-        : this.$emit("search", this.file, true);
     },
+    // 搜索文件路径搜索
+    // fileSearch() {
+    //   if (this.file.key !== "") {
+    //     this.$emit("search", this.file.key, true);
+    //     return;
+    //   }
+    //   let _act_item = this.path.history.find(i => i.id === this.file.id);
+    //   _act_item
+    //     ? this.routerActive(_act_item, _act_item.data)
+    //     : this.$emit("search", this.file, true);
+    // },
     /**
      * 往历史里添加新的步骤
      * file: Object 路径数据{id: 完整路径id, pid: 父级路径id, path: 路径名}
@@ -552,6 +569,7 @@ export default {
         ...file,
         data
       });
+      this.filter_path = JSON.parse(JSON.stringify(data));
       this.self_data = data;
       this.file.pid = file.pid;
       this.file.id = file.id;
@@ -569,6 +587,7 @@ export default {
       this.file.pid = file.pid;
       this.file.id = file.id;
       this.file.path = splicParentsUntil(this.allPath, file, this.selfProps);
+      this.filter_path = JSON.parse(JSON.stringify(data));
       this.self_data = data;
       this.path.level = !file.id || file.id === guid ? 1 : 2;
     },
@@ -616,6 +635,11 @@ export default {
         this.path.history.length = this.path.history.length - 1;
         this.path.index -= 1;
         let _prv = this.path.history[this.path.index];
+        if (_prv) {
+          if (!_prv.data || !_prv.data.length) {
+            this.$emit("search", _prv, true);
+          }
+        }
         this.routerActive(_prv, _prv.data);
       } else if (type === "next") {
         if (this.pathIsEnd) return;
@@ -777,7 +801,9 @@ export default {
         _path = require("./images/file_none@3x.png");
         return _path;
       }
-      if (["jpg", "jpeg", "png", "gif", "bmp"].includes(_suffix)) {
+      if (
+        ["jpg", "jpeg", "png", "gif", "bmp"].includes(_suffix.toLowerCase())
+      ) {
         // 图片
         _path = require("./images/file_img@3x.png");
       } else if (["zip", "rar", "7z"].includes(_suffix)) {
@@ -828,10 +854,13 @@ export default {
     // 处理数据变动
     handleDataChange(val) {
       let _data = val || [];
+      // console.warn("this.file.key",this.file.key);
       if (this.isFolderFn) {
         _data.forEach(i => {
           i.isFolder = this.isFolderFn(i);
         });
+        //存储源数据副本
+        this.filter_path = JSON.parse(JSON.stringify(_data));
       }
       if (this.isLockFn) {
         _data.forEach(i => {
@@ -839,7 +868,8 @@ export default {
         });
       }
       if (this.file.key) {
-        this.self_data = _data;
+        // this.self_data = _data;
+        this.routerPush(this.file, _data);
         return;
       }
       let _act = this.path.history.find(i => i.id === this.file.id);
@@ -847,21 +877,28 @@ export default {
       _act.data = _data;
       this.routerActive(_act, _data);
     },
-    splitPath(path){
-      console.warn("path",path);
-     return path.substring(0,path.lastIndexOf("/"));
+    splitPath(path) {
+      return path.substring(0, path.lastIndexOf("/"));
     }
   },
   computed: {
-    path_now(){
-      if(this.self_data.length>0){
-        return this.splitPath(this.self_data[0][this.selfProps.pathId]);
-      }else if(this.path.history.length>0){
-        return this.splitPath(this.path.history[0].data[0][this.selfProps.pathId]);
-      }else{
-        return "";
-      }
-    },
+    // path_now(){
+    //   console.warn(this.path.history,'this.path.history');
+    //   if(this.path.history.length>0){
+    //     if(this.path.history.length==1){return this.splitPath(this.self_data[0][this.selfProps.pathId]);}
+    //     else if(this.self_data.length==0){ return this.path.history[this.path.history.length - 1].id; }
+    //     else return this.path.history[this.path.history.length - 1].id
+    //   }else{
+    //     return "";
+    //   }
+    // if(this.self_data.length>0){
+    //   return this.splitPath(this.self_data[0][this.selfProps.pathId]);
+    // }else if(this.path.history.length>0){
+    //   return this.splitPath(this.path.history[0].data[0][this.selfProps.pathId]);
+    // }else{
+    //   return "";
+    // }
+    // },
 
     // 自身头部更多操作自定义内容
     selfHeaderDropdown() {
@@ -962,7 +999,18 @@ export default {
       };
       this.tree_path = arrayToTree(val || [], options);
     },
-   
+    self_data(val) {
+      // console.warn("this.file",);
+      if (val.length == 0) {
+        this.path_now = this.file.id;
+        return;
+      }
+      if (this.path.history.length > 1) {
+        this.path_now = this.path.history[this.path.history.length - 1].id;
+      } else if (this.path.history.length == 1) {
+        this.path_now = this.splitPath(val[0][this.selfProps.pathId]);
+      }
+    }
     // file_checked_data(val){
     //   this.$emit('lineUp',val);
     // }

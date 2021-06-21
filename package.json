@@ -1,6 +1,6 @@
 {
-  "name": "wl-explorer-simple",
-  "version": "0.0.43",
+  "name": "@saturn/wl-explorer-simple",
+  "version": "0.0.1-prevBtn-prevToRoot",
   "author": "hcb<https://github.com/hql7>",
   "license": "GNU",
   "private": false,
@@ -62,6 +62,9 @@
       "autoprefixer": {}
     }
   },
+  "files":[
+    "lib"
+  ],
   "browserslist": [
     "> 1%",
     "last 2 versions"
